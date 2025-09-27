@@ -2,7 +2,24 @@
 {% block content %}
 <div class="welcome">
 	<h2>Welcome to NFL App!</h2>
-	<p>Check the latest NFL game results</p>
-	<a href="{{ url_for('games') }}">See latest games</a>
+	<p>Your ultimate source for NFL team statistics, player data, and game results</p>
+	
+	<div class="quick-lins">
+		<a href="{{ url_for('games') }}" class="btn-primary">Latest Games</a>
+		<a href="{{ url_for('search_team') }}" class="btn-primary">Search Teams</a>
+		<a href="#" class="btn-secondary">Player Stats (Coming Soon)</a>
+		<a href="#" class="btn-secondary">Charts (Coming Soon)</a>
+	</div>
+	
+	<div class="features">
+		<h3>Features:</h3>
+		<ul>
+			<li>Search all 32 NFL teams</li>
+			<li>View recent game results</li>
+			<li>Player statistics (in development)</li>
+			<li>Interactive charts (in development)</li>
+			<li>Team rankings (in development)</li>
+		</ul>
+	</div>
 </div>
 {% endblock %}

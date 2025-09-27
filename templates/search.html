@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="search-container">
+	<h2>Search NFL Team</h2>
+
+	<form method="POST" action="{{ url_for('search_team') }}" class="search-form">
+		<input type="text" name="team_name" placeholder="Enter team name (e.g., 'dallas cowboys')"
+		value="{{ search_query or '' }}"
+		required class="search-input">
+		<button type="submit" class="search-btn">Search Team</button>
+	</form>
+
+	{% if error %}
+	<div class="error-message">
+		{{ error }}
+	</div>
+	{% endif %}
+
+	<div class="all-teams">
+		<h3>All NFL Teams (32)</h3>
+		<div class="team-grid">
+			{% for key, name in teams.items() %}
+			<a href="{{ url_for('team_games', team_key=key) }}" class="team-card">
+				{{ name }}
+			</a>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endblock %}
