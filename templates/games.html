@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+	<h2>Last games</h2>
+	{% if games %}
+	<table>
+		<tr>
+			<th>Date</th>
+			<th>Home</th>
+			<th>Score</th>
+			<th>Away</th>
+		</tr>
+		{% for g in games %}
+		<tr>
+			<td>{{ g.dateEvent }}</td>
+			<td>{{ g.strHomeTeam }}</td>
+			<td>{% if g.intHomeScore is not none and g.intAwayScore is not none %}
+				{{ g.intHomeScore }} - {{ g.intAwayScore }}
+				{% else %}
+					vs
+				{% endif %}
+			</td>
+			<td>{{ g.strAwayTeam }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% else %}
+	<p>No games available</p>
+	{% endif %}
+	<a href="{{ url_for('index') }}">Back to Home</a>	
+{% endblock %}
