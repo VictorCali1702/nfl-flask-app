@@ -78,9 +78,22 @@ TEAM_DISPLAY_NAMES = {
 	"washington commanders": "Washington Commanders"
 }
 
+POPULAR_PLAYERS = {
+	"patrick mahomes": "Patrick Mahomes",
+	"tom brady": "Tom Brady",
+	"aaron rodgers": "Aaron Rodgers",
+	"josh allen": "Josh Allen",
+	"joe burrow": "Joe Burrow",
+	"justin jefferson": "Justin Jefferson",
+	"travis kelce": "Travis Kelce",
+	"christian mccaffrey": "Christian McCaffrey",
+	"tyreek hill": "Tyreek Hill",
+	"myles garrett": "Myles Garrett"
+}
+
 @app.route("/")
 def index():
-	return render_template("index.html", teams=TEAM_DISPLAY_NAMES)
+	return render_template("index.html", teams=TEAM_DISPLAY_NAMES, popular_players=POPULAR_PLAYERS)
 
 @app.route("/games")
 def games():
@@ -124,6 +137,44 @@ def team_games(team_key):
 		return render_template("team_results.html", games=games, team_name=display_name, search_query=team_key)
 	
 	return render_template("search.html", error="Team not found", teams=TEAM_DISPLAY_NAMES)
+
+
+@app.route("/players", methods=["GET", "POST"])
+def search_players():
+	if request.method == "POST":
+		player_name = request.form.get("player_name", "").strip()
+		
+		if player_name:
+			# seek the player in API
+			url = f"https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p={player_name}"
+			response = requests.get(url)
+			data = response.json()
+
+			players = data.get("player", [])
+
+			# filter only NFL players
+			nfl_players = [p for p in players if p.get("strSport") == "American Football"]
+			return render_template("player_results.html", players=nfl_players, search_query=player_name, results_count=len(nfl_players))
+		else:
+			return render_template("player_search.html", error="Please enter a player name", popular_players=POPULAR_PLAYERS)
+	
+	return render_template("player_search.html", popular_players=POPULAR_PLAYERS)
+
+# player details page
+@app.route("/player/<player_id>")
+def player_detail(player_id):
+	# download player details
+	url = f"https://www.sportsdb.com/api/v1/json/3/lookupplayer.php?id={player_id}"
+	response = requests.get(url)
+	data = response.json()
+
+	player = data.get("players", [{}])[0] if data.get("players") else {}
+
+	# Download career stats (if available)
+	stats_url = f"https://www.thesportsdb.com/api/v1/json/3/lookupplayer.php?id={player_id}"
+
+	return render_template("player_detail.html", player=player)
+
 
 if __name__ == "__main__":
 	app.run(debug=True)

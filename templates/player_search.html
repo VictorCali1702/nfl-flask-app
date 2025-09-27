@@ -1,0 +1,44 @@
+{% extends "base.html %"}
+{% block content %}
+<div class="search-container">
+	<h2>Search NFL Players</h2>
+
+	<form method="POST" action="{{ url_for('search_players') }}" class="search-form">
+		<input type="text" name="player_name" placeholder="Enter player name (e.g., 'Tom Brady')"
+
+		value="{{ search_query or '' }}"
+		required class="search-input">
+		<button type="submit" class="search-btn">Search Player</button>
+	</form>
+
+	{% if error %}
+	<div class="error-message">
+		{{ error}}
+	</div>
+	{% endif %}
+
+	<div class="popular-players">
+		<h3>Popular Players</h3>
+		<div class="players-grid">
+			{% for key, name in popular_players.items() %}
+			<div class="player-card">
+				<strong>{{ name }}</strong>
+				<form method="POST" action="{{ url_for('search_players') }}" style="display: inline;">
+					<input type="hidden" name="player_name" value="{{ name }}">
+					<button type="submit" class="btn-small">View</button>
+				</form>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+
+	<div class="search-tips">
+		<h4>Search Tips:</h4>
+		<ul>
+			<li>Use full name for better results</li>
+			<li>Try "Tom Brady", "Patrick Mahomes", "Lamar Jackson"</li>
+			<li>Search by position: "quaterback", "receiver", etc.</li>
+		</ul>
+	</div>
+</div>
+{% endblock %}

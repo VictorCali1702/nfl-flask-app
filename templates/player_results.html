@@ -1,0 +1,68 @@
+{% extends "base.html %"}
+{% block content %}
+<div class="player-results">
+	<h2>Player Search Results</h2>
+
+	<a href="{{ url_for('search_players') }}" class="back-link">Back to Player Search</a>
+
+	<div class="results-info">
+		<p>Search for:<strong>"{{ search_query }}"</strong></p>
+		<p>Found:<strong>{{ results_count }}players</strong></p>
+	</div>
+
+	{% if players %}
+	<div class="players-list">
+		{% for player in players %}
+		<div class="player-result-card">
+			<div class="player-info">
+				<div class="player-header">
+					<h3>{{ player.strPlayer }}</h3>
+					<span class="player-position">{{ player.strPosition }}</span>
+				<div class="player-details">
+					<div class="detail">
+						<strong>Team:</strong>
+						{{ player.strTeam or 'Free Agent' }}
+					</div>
+					<div class="detail">
+						<strong>Nationality:</strong>
+						{{ player.strNationality }}
+					</div>
+					<div class="detail">
+						<strong>Born:</strong>
+						{{ player.dateBorn or 'N/A' }}
+					</div>
+					{% if player.strHeight %}
+					<div class="detail">
+						<strong>Height:</strong>
+						{{ player.strHeight }}
+					</div>
+					{% endif %}
+					{% if player.strWeight %}
+					<div class="detail">
+						<strong>Weight:</strong>
+						{{ player.strWeight }}
+					</div>
+					{% endif %}
+				</div>
+
+				{% if player.strDescriptionEN %}
+				<div class="player-bio">
+					<p>{{ player.strDescriptionEN[:200] }}...</p>
+				</div>
+				{% endif %}
+			</div>
+
+			<div class="player-actions">
+				<a href="{{ url_for('player_detail', player_id=player.idPlayer) }}" class="btn-primary">View Details</a>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	{% else %}
+	<div class="no-results">
+		<p>No players found for "{{ search_query }}"</p>
+		<p>Try searching with a different name or check the spelling.</p>
+	</div>
+	{% endif %}
+</div>
+{% endblock %}
