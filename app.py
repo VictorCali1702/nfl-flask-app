@@ -100,7 +100,6 @@ def games():
 	url = "https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=134922"
 	response = requests.get(url)
 	data = response.json()
-
 	games = data.get("results", []) # list of matches
 	return render_template("games.html", games=games, team_name="Baltimore Ravens")
 
@@ -120,7 +119,8 @@ def search_team():
 			games = data.get("results", [])
 			return render_template("team_results.html", games=games, team_name=display_name, search_query=team_name)
 		else:
-			return render_template("search.html", error="Team not found. Try full team name (e.g., 'dallas cowboys')", teams=TEAM_DISPLAY_NAMES)
+			return render_template("search.html", error="Team not found. Try full team name (e.g., 'dallas cowboys')", 
+						  teams=TEAM_DISPLAY_NAMES)
 	return render_template("search.html", teams=TEAM_DISPLAY_NAMES)
 
 @app.route("/team/<team_key>")

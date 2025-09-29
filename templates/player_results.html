@@ -1,4 +1,4 @@
-{% extends "base.html %"}
+{% extends "base.html" %}
 {% block content %}
 <div class="player-results">
 	<h2>Player Search Results</h2>
@@ -18,6 +18,7 @@
 				<div class="player-header">
 					<h3>{{ player.strPlayer }}</h3>
 					<span class="player-position">{{ player.strPosition }}</span>
+				</div>	
 				<div class="player-details">
 					<div class="detail">
 						<strong>Team:</strong>
