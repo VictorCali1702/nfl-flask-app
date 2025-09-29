@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="welcome">
-	<h2>Welcome to NFL App!</h2>
+	<h2>Welcome to NFL Stats App!</h2>
 	<p>Your ultimate source for NFL team statistics, player data, and game results</p>
 	
 	<div class="quick-lins">
@@ -21,5 +21,18 @@
 			<li>Team rankings (in development)</li>
 		</ul>
 	</div>
+
+	<div class="popular-section">
+		<h3>Popular Players</h3>
+		<div class="popular-grid">
+			{% for key, name in popular_players.items() %}
+			<form method="POST" action="{{ url_for('search_players') }}" class="popular-players-form">
+				<input type="hidden" name="player_name" value="{{ name }}">
+				<button type="submit" class="popular-player-btn">{{ name }}</button>
+			</form>
+			{% endfor %}
+		</div>
+	</div>
+
 </div>
 {% endblock %}
