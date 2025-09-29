@@ -1,2 +1,99 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="player-detail">
+	<a href="{{ url_for('search_players') }}" class="back-link">Back to Player search</a>
+
+	{% if player %}
+	<div class="player-profile">
+		<div class="profile-header">
+			<div class="profile-image">
+				{% if plyer.strCutout %}
+				<img src="{{ player.strCutout }}" alt="{{ player.strPlayer }}" class="player-img">
+				{% else %}
+				<div class="no-image"></div>
+				{% endif %}
+			</div>
+
+			<div class="profile-info">
+				<h1>{{ player.strPlayer }}</h1>
+				<div class="player-meta">
+					<span class="position">{{ player.strPosition }}</span>
+					<span class="team">{{ player.strTeam or 'Free Agent' }}</span>
+					<span class="nationality">{{ player.strNationality }}</span>
+				</div>
+
+				<div class="player-stats">
+					<div class="stat">
+						<strong>Height:</strong>
+						{{ player.strHeight or 'N/A' }}
+					</div>
+					<div class="stat">
+						<strong>Weight:</strong>
+						{{ player.strWeight or 'N/A' }}
+					</div>
+					<div class="stat">
+						<strong>Born:</strong>
+						{{ player.dateBorn or 'N/A' }}
+					</div>
+					<div class="stat">
+						<strong>Birth Place:</strong>
+						{{ player.strBirthLocation or 'N/A' }}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		{% if player.strDescriptionEN %}
+		<div class="player-info">
+			<h3>Biography</h3>
+			<p>{{ player.strDescriptionEN }}</p>
+		</div>
+		{% endif %}
+
+		<div class="career-info">
+			<h3>Career Information</h3>
+			<div class="career-stats">
+				<div class="stats-card">
+					<strong>Current Team</strong>
+					<span>{{ player.strTeam or 'Free Agent' }}</span>
+				</div>
+				<div class="stats-card">
+					<strong>Position</strong>
+					<span>{{ player.strPosition }}</span>
+				</div>
+				<div class="stats-card">
+					<strong>Number</strong>
+					<span>{{ player.strNumber or 'N/A' }}</span>
+				</div>
+				<div class="stats-card">
+					<strong>Status</strong>
+					<span>{{ player.strStatus or 'Active' }}</span>
+				</div>
+			</div>
+		</div>
+
+		{% if player.strFacebook or player.strTwitter or player.strInstagram %}
+		<div class="social-links">
+			<h3>Social Media</h3>
+			<div class="social-icons">
+				{% if player.strFacebook %}
+				<a href="{{ player.strFacebook }}" target="_blank">Facebook</a>
+				{% endif %}
+				{% if player.strTwitter %}
+				<a href="{{ player.strTwitter }}" target="_blank">Twitter</a>
+				{% endif %}
+				{% if player.strInstagram %}
+				<a href="{{ player.strInstagram }}" target="_blank">Instagram</a>
+				{% endif %}
+			</div>
+		</div>
+		{% endif %}
+
+	</div>
+	{% else %}
+	<div class="error-message">
+		<p>Player not found or details unvailable.</p>
+	</div>
+	{% endif %}
+</div>
+{% endblock %}
