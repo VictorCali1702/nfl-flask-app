@@ -25,7 +25,7 @@
 				<strong>{{ name }}</strong>
 				<form method="POST" action="{{ url_for('search_players') }}" style="display: inline;">
 					<input type="hidden" name="player_name" value="{{ name }}">
-					<button type="submit" class="btn-small">View</button>
+					<button type="submit" class="btn-small">View Stats</button>
 				</form>
 			</div>
 			{% endfor %}
