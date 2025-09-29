@@ -7,7 +7,7 @@
 	<div class="quick-lins">
 		<a href="{{ url_for('games') }}" class="btn-primary">Latest Games</a>
 		<a href="{{ url_for('search_team') }}" class="btn-primary">Search Teams</a>
-		<a href="#" class="btn-secondary">Player Stats (Coming Soon)</a>
+		<a href="{{ url_for('search_players') }}" class="btn-secondary">Player Stats</a>
 		<a href="#" class="btn-secondary">Charts (Coming Soon)</a>
 	</div>
 	
@@ -16,20 +16,23 @@
 		<ul>
 			<li>Search all 32 NFL teams</li>
 			<li>View recent game results</li>
-			<li>Player statistics (in development)</li>
+			<li>Player statistics and profiles</li>
 			<li>Interactive charts (in development)</li>
 			<li>Team rankings (in development)</li>
 		</ul>
 	</div>
 
-	<div class="popular-section">
+	<div class="popular-players">
 		<h3>Popular Players</h3>
 		<div class="popular-grid">
 			{% for key, name in popular_players.items() %}
-			<form method="POST" action="{{ url_for('search_players') }}" class="popular-players-form">
-				<input type="hidden" name="player_name" value="{{ name }}">
-				<button type="submit" class="popular-player-btn">{{ name }}</button>
-			</form>
+			<div class="player-card">
+				<strong>{{ name }}</strong>
+				<form method="POST" action="{{ url_for('search_players') }}">
+					<input type="hidden" name="player_name" value="{{ name }}">
+					<button type="submit" class="btn-small">View Stats</button>
+				</form>
+			</div>
 			{% endfor %}
 		</div>
 	</div>
