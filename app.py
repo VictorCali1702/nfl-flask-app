@@ -164,7 +164,7 @@ def search_players():
 @app.route("/player/<player_id>")
 def player_detail(player_id):
 	# download player details
-	url = f"https://www.sportsdb.com/api/v1/json/3/lookupplayer.php?id={player_id}"
+	url = f"https://www.thesportsdb.com/api/v1/json/3/lookupplayer.php?id={player_id}"
 	response = requests.get(url)
 	data = response.json()
 
