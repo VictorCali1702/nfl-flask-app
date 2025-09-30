@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="team-all-matches">
+	<h2>{{ team_name }} - All Season Matches</h2>
+
+	<div class="team-navigation">
+		<a href="{{ url_for('team_games', team_key=team_key) }}" class="btn-small">Last 5 Games</a>
+		<a href="{{ url_for('team_schedule', team_key=team_key) }}" class="btn-small">Upcoming Games</a>
+		<a href="{{ url_for('search_team') }}" class="btn-small">Back to Search</a>
+	</div>
+
+	<div class="season-stats">
+		<div class="stat-card">
+			<strong>Total Games</strong>
+			<span>{{ total_games }}</span>
+		</div>
+		<div class="stat-card">
+			<strong>Home Games</strong>
+			<span>{{ home_games|length }}</span>
+		</div>
+		<div class="stat-card">
+			<strong>Away Games</strong>
+			<span>{{ away_games|length }}</span>
+		</div>
+	</div>
+
+	<!--Home Games-->
+	<div class="matches-section">
+		<h3>Home Games ({{ home_games|length }})</h3>
+		{% if home_games %}
+		<table class="games-table">
+			<tr>
+				<th>Date</th>
+				<th>VS</th>
+				<th>Score</th>
+				<th>Status</th>
+				<th>League</th>
+			</tr>
+			{% for game in home_games %}
+			<tr>
+				<td>{{ game.dateEvent }}</td>
+					<td>
+						<strong>{{ game.strHomeTeam }}</strong> vs {{ game.strAwayTeam }}
+					</td>
+					<td>
+						{% if game.intHomeScore is not none and game.intAwayScore is not none %} 
+						{{ game.intHomeScore }} - {{ game.intAwayScore }}
+						{% elif game.strStatus == "Not Started" %}
+						{{ game.strTime }}
+						{% else %}
+							VS
+						{% endif %}
+					</td>
+					<td>
+						<span class="status-{{ game.strStatus|lower|replace(' ', '-') }}">{{ game.strStatus }}</span>
+					</td>
+
+					<td>{{ game.strLeague }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		{% else %}
+		<p class="no-game">No home games found for this season.</p>
+		{% endif %}
+	</div>
+
+	<!--Away Games-->
+	<div class="matches-section">
+		<h3>Away Games ({{ away_games|length }})</h3>
+		{% if away_games %}
+		<table class="games-table">
+			<tr>
+				<th>Date</th>
+				<th>VS</th>
+				<th>Score</th>
+				<th>Status</th>
+				<th>League</th>
+			</tr>
+			{% for game in away_games %}
+			<tr>
+				<td>{{ game.dateEvent }}</td>
+					<td>{{ game.strHomeTeam }} vs <strong>{{ game.strAwayTeam }}</strong></td>
+					<td>
+						{% if game.intHomeScore is not none and game.intAwayScore is not none %}
+						{{ game.intHomeScore }} - {{ game.intAwayScore }}
+						{% elif game.strStatus == "Not Started" %}
+						{{ game.strTime }}
+						{% else %}
+							VS
+						(% endif %)
+					</td>
+					<td>
+						<span class="status-{{ game.strStatus|lower|replace(' ', '-') }}">{{ game.strStatus }}</span>
+					</td>
+
+				<td>{{ game.strLeague }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		{% else %}
+		<p class="no-games">No away games found for this season.</p>
+		{% endif %}
+	</div>
+
+
+</div>
+{% endblock %}
