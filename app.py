@@ -175,6 +175,46 @@ def player_detail(player_id):
 
 	return render_template("player_detail.html", player=player)
 
+# NEw FUNCTIONS:
+
+@app.route("/team/<team_key>/all_matches")
+def team_all_matches(team_key):
+	if team_key in NFL_TEAMS:
+		team_id = NFL_TEAMS[team_key]
+		display_name = TEAM_DISPLAY_NAMES[team_key]
+
+		# download all matches from season 2024
+		current_year = 2024 #later we can that change
+
+		url = f"https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id={team_id}&s={current_year}"
+		response = requests.get(url)
+		data = response.json()
+		events = data.get("events", [])
+
+		# Divide the games for home and away games:
+		home_games = [game for game in events if game.get("strHomeTeam", "").lower() == team_key]
+		away_games = [game for game in events if game.get("strAwayTeam", "").lower() == team_key]
+
+		return render_template("team_all_matches.html", home_games=home_games, away_games=away_games, 
+						 team_name=display_name, team_key=team_key, total_games=len(home_games) + len(away_games))
+	
+	return render_template("search.html", error="Team not found", teams=TEAM_DISPLAY_NAMES)
+
+@app.route("/team/<team_key>/schedule")
+def team_schedule(team_key):
+	if team_key in NFL_TEAMS:
+		team_id = NFL_TEAMS[team_key]
+		display_name = TEAM_DISPLAY_NAMES[team_key]
+
+		url = f"https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id={team_id}"
+		response = requests.get(url)
+		data = response.json()
+
+		upcoming_games = data.get("events", [])
+
+		return render_template("team_schedule.html", upcoming_games=upcoming_games, team_name=display_name, team_key=team_key)
+	
+	return render_template("search.html", error="Team not found", teams=TEAM_DISPLAY_NAMES)
 
 if __name__ == "__main__":
 	app.run(debug=True)
