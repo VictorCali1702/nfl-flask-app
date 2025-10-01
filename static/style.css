@@ -281,3 +281,72 @@ h3 {
 		text-align: center;
 	}
 }
+
+/* New styles */
+.team-navigation {
+	display: flex;
+	gap: 10px;
+	margin: 20px 0;
+	flex-wrap: wrap;
+}
+
+.matches-section {
+	margin: 30px 0;
+	padding: 20px;
+	background: #f8f9fa;
+	border-radius: 10px;
+}
+
+.matches-section h3 {
+	color: #013369;
+	border-bottom: 2px solid #D50A0A;
+	padding-bottom: 10px;
+	margin-bottom: 15px;
+}
+
+.season-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 15px;
+	margin: 20px 0;
+}
+
+.stat-card {
+	background: #013369;
+	color: white;
+	padding: 20px;
+	border-radius: 8px;
+	text-align: center;
+}
+
+.stat-card strong {
+	display: block;
+	font-size: 14px;
+	opacity: 0.8;
+	margin-bottom: 5px;
+}
+
+.stat-card span {
+	font-size: 24px;
+	font-weight: bold;
+}
+
+.status-finished {
+	color: #28a745;
+	font-weight: bold;
+}
+
+.status-not-started {
+	color: #ffc107;
+	font-weight: bold;
+}
+
+.status-in-progress {
+	color: #007bff;
+	font-weight: bold;
+}
+
+.team-all-matches, .team-schedule {
+	max-width: 1200px;
+	margin: 0 auto;
+}

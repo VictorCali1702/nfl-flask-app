@@ -6,7 +6,7 @@
 	<div class="team-navigation">
 		<a href="{{ url_for('team_games', team_key=team_key) }}" class="btn-small">Last 5 Games</a>
 		<a href="{{ url_for('team_all_matches', team_key=team_key) }}" class="btn-small">All Season Games</a>
-		<a href="{{ url_for('search_team') }}" class="btn-small">Bact to Search</a>
+		<a href="{{ url_for('search_team') }}" class="btn-small">Back to Search</a>
 	</div>
 	
 	{% if upcoming_games %}
@@ -22,6 +22,7 @@
 		</tr>
 		{% for game in upcoming_games %}
 		<tr>
+			<td>{{ game.dateEvent }}</td>
 			<td>
 				{% if game.strHomeTeam == team_name %}
 				<strong>{{ game.strHomeTeam }}</strong> vs {{ game.strAwayTeam }}

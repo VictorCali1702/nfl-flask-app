@@ -3,7 +3,14 @@
 <div class="team-results">
 	<h2> {{ team_name }} - Last Games</h2>
 
-	<a href="{{ url_for('search_team') }}" class="back-link">Back to Team Search</a>
+	<!--New function-->
+	<div class="team-navigation">
+		<a href="{{ url_for('team_all_matches', team_key=search_query) }}" class="btn-small">All Season Games</a>
+		<a href="{{ url_for('team_schedule', team_key=search_query) }}" class="btn-small">Upcoming Games</a>
+		<a href="{{ url_for('search_team') }}" class="btn-small">Back to Search</a>
+	</div>
+
+	<a href="{{ url_for('index') }}" class="back-link">Back to Home</a>
 
 	{% if games %}
 	<div class="games-count">Found {{ games|length }} recent games</div>
