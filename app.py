@@ -184,19 +184,24 @@ def team_all_matches(team_key):
 		display_name = TEAM_DISPLAY_NAMES[team_key]
 
 		# download all matches from season 2024
-		current_year = 2024 #later we can that change
+		# current_year = 2024 #later we can that change
 
-		url = f"https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id={team_id}&s={current_year}"
+		url = f"https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id={team_id}"
 		response = requests.get(url)
 		data = response.json()
-		events = data.get("events", [])
+		games = data.get("events", [])
+
+		print(f"DEBUG: Found {len(games)} games for {display_name}")
+		for game in games:
+			print(f"DEBUG: {game.get('strEvent')} - {game.get('strHomeTeam')} vs {game.get('strAwayTeam')}")
+
 
 		# Divide the games for home and away games:
-		home_games = [game for game in events if game.get("strHomeTeam", "").lower() == team_key]
-		away_games = [game for game in events if game.get("strAwayTeam", "").lower() == team_key]
+		home_games = [game for game in games if game.get("strHomeTeam", "").lower() == team_key]
+		away_games = [game for game in games if game.get("strAwayTeam", "").lower() == team_key]
 
-		return render_template("team_all_matches.html", home_games=home_games, away_games=away_games, 
-						 team_name=display_name, team_key=team_key, total_games=len(home_games) + len(away_games))
+		return render_template("team_all_matches.html", games=games, home_games=home_games, away_games=away_games, 
+						 team_name=display_name, team_key=team_key, total_games=len(games))
 	
 	return render_template("search.html", error="Team not found", teams=TEAM_DISPLAY_NAMES)
 
