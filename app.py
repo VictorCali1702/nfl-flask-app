@@ -143,4 +143,107 @@ def team_schedule(team_key):
 # TEAM SEARCH
 @app.route("/search", methods=["GET", "POST"])
 def search_team():
-	...				
+	if request.method == "POST":
+		team_name = request.form.get("team_name", "").lower().strip()
+
+		if team_name in ESPN_TEAMS:
+			return redirect(url_for("team_schedule", team_key=team_name))
+		else:
+			return render_template("search.html", error="Team not found. Try full name (e.g., 'dallas cowboys')", teams=TEAM_DISPLAY_NAMES)
+
+	return render_template("search.html", teams=TEAM_DISPLAY_NAMES) 
+
+# PLAYER SEARCH
+@app.route("/players", methods=["GET", "POST"])
+def search_players():
+	if request.method == "POST":
+		player_name = request.form.get("player_name", "").strip()
+
+		if player_name:
+			#Search player in ESPN API
+			url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/players?search={player_name}"
+			response = requests.get(url)
+			data = response.json()
+
+			players = data.get("athletes", [])
+
+			return render_template("player_results.html", players=players, search_query=player_name,
+						  results_count=len(players))
+		
+	return render_template("player_search.html", popular_players=POPULAR_PLAYERS)
+
+# PLAYER DETAILS
+@app.route("/player/<plyer_id>")
+def player_detail(player_id):
+	try:
+		# Get player profile and stats
+		profile_url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/players/{player_id}"
+		stats_url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/players/{player_id}/statistics"
+
+		profile_response = requests.get(profile_url)
+		stats_response = requests.get(stats_url)
+
+		profile_data = profile_response.json()
+		stats_data = stats_response.json()
+
+		athlete = profile_data.get("athlete", {})
+
+		player = {
+			"id": player_id,
+			"name": athlete.get("displayName", ""),
+			"position": athlete.get("position", {}).get("displayName", ""),
+			"team": athlete.get("team", {}).get("displayName", ""),
+			"headshot": athlete.get("headshot", {}).get("href", ""),
+			"description": athlete.get("description", ""),
+			"age": athlete.get("age", ""),
+			"height": athlete.get("displayHeight", ""),
+			"weight": athlete.get("displayWeight", ""),
+			"college": athlete.get("college", {}).get("name", ""),
+			"birth_place": athlete.get("birthPlace", {}).get("city", "") + ", " + athlete.get("birthPlace", {}).get("state", ""),
+			"jersey": athlete.get("jersey", ""),
+			"experience": athlete.get("experience", {}).get("years", ""),
+			"stats": stats_data.get("splits", {}).get("categories", [])
+		}
+
+		return render_template("player_detail.html", player=player)
+	
+	except Exception as e:
+		return render_template("player_detail.html", player={}, error=str(e))
+	
+# LATEST SCORES
+@app.route("/scores")
+def latest_scores():
+	# Get latest NFL scores
+	url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+	response = requests.get(url)
+	data = response.json()
+
+	events = data.get("events", [])
+
+	games = []
+	for event in events:
+		competitions = event.get("competitions", [{}])[0]
+		competitors = competitions.get("competitors", [])
+
+		if len(competitors) >= 2:
+			home_team = competitors[0].get("team", {}).get("displayName", "")
+			away_team = competitors[1].get("team", {}).get("displayName", "")
+			home_score = competitors[0].get("score", {}).get("displayValue", "")
+			away_score = competitors[1].get("score", {}).get("displayValue", "")
+
+			game = {
+				"date": event.get("date", "")[:10],
+				"home_team": home_team,
+				"away_team": away_team,
+				"home_score": home_score,
+				"away_score": away_score,
+				"status": event.get("status", {}).get("type", {}).get("state", ""),
+				"time": event.get("date", "")[11:16] if event.get("date") else ""
+			}
+			games.append(game)
+
+	return render_template("scores.html", games=games)
+
+if __name__ == "__main__":
+	app.run(debug=True)
+	
