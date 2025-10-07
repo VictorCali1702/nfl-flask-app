@@ -1,5 +1,5 @@
 # Nfl App with ESPN API - complete rewrite
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import requests
 import json
 from datetime import datetime
@@ -14,7 +14,7 @@ ESPN_TEAMS = {
 	"buffalo bills": "2",
 	"carolina panthers": "29",
 	"chicago bears": "3",
-	"cincinatti bengals": "4",
+	"cincinnati bengals": "4",
 	"cleveland browns": "5",
 	"dallas cowboys": "6",
 	"denver broncos": "7",
@@ -49,7 +49,7 @@ TEAM_DISPLAY_NAMES = {
 	"buffalo bills": "Buffalo Bills",
 	"carolina panthers": "Carolina Panthers",
 	"chicago bears": "Chicago Bears",
-	"cincinatti bengals": "Cincinatti Bengals",
+	"cincinnati bengals": "Cincinnati Bengals",
 	"cleveland browns": "Cleveland Browns",
 	"dallas cowboys": "Dallas Cowboys",
 	"denver broncos": "Denver Broncos",
@@ -120,7 +120,7 @@ def team_schedule(team_key):
 
 				game = {
 					"date": event.get("date", "")[:10],
-					"home_teaam": home_team,
+					"home_team": home_team,
 					"away_team": away_team,
 					"home_score": home_score,
 					"away_score": away_score,
@@ -173,7 +173,7 @@ def search_players():
 	return render_template("player_search.html", popular_players=POPULAR_PLAYERS)
 
 # PLAYER DETAILS
-@app.route("/player/<plyer_id>")
+@app.route("/player/<player_id>")
 def player_detail(player_id):
 	try:
 		# Get player profile and stats
@@ -246,4 +246,3 @@ def latest_scores():
 
 if __name__ == "__main__":
 	app.run(debug=True)
-	

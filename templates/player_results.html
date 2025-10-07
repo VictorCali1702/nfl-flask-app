@@ -16,45 +16,25 @@
 		<div class="player-result-card">
 			<div class="player-info">
 				<div class="player-header">
-					<h3>{{ player.strPlayer }}</h3>
-					<span class="player-position">{{ player.strPosition }}</span>
+					<h3>{{ player.displayName }}</h3>
+					<span class="player-position">{{ player.displayName }}</span>
 				</div>	
 				<div class="player-details">
 					<div class="detail">
 						<strong>Team:</strong>
-						{{ player.strTeam or 'Free Agent' }}
+						{{ player.team.displayName }}
 					</div>
 					<div class="detail">
-						<strong>Nationality:</strong>
-						{{ player.strNationality }}
+						<strong>Jersey:</strong>
+						{{ player.jersey }}
 					</div>
 					<div class="detail">
-						<strong>Born:</strong>
-						{{ player.dateBorn or 'N/A' }}
+						<strong>Age:</strong>
+						{{ player.age }}
 					</div>
-					{% if player.strHeight %}
-					<div class="detail">
-						<strong>Height:</strong>
-						{{ player.strHeight }}
-					</div>
-					{% endif %}
-					{% if player.strWeight %}
-					<div class="detail">
-						<strong>Weight:</strong>
-						{{ player.strWeight }}
-					</div>
-					{% endif %}
-				</div>
-
-				{% if player.strDescriptionEN %}
-				<div class="player-bio">
-					<p>{{ player.strDescriptionEN[:200] }}...</p>
-				</div>
-				{% endif %}
-			</div>
-
+				</div>	
 			<div class="player-actions">
-				<a href="{{ url_for('player_detail', player_id=player.idPlayer) }}" class="btn-primary">View Details</a>
+				<a href="{{ url_for('player_detail', player_id=player.player_id) }}" class="btn-primary">View Profile & Stats</a>
 			</div>
 		</div>
 		{% endfor %}

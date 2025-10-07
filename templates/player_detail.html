@@ -3,96 +3,85 @@
 <div class="player-detail">
 	<a href="{{ url_for('search_players') }}" class="back-link">Back to Player search</a>
 
-	{% if player %}
+	{% if player.name %}
 	<div class="player-profile">
 		<div class="profile-header">
 			<div class="profile-image">
-				{% if player.strCutout %}
-				<img src="{{ player.strCutout }}" alt="{{ player.strPlayer }}" class="player-img">
+				{% if player.headshot %}
+				<img src="{{ player.headshot }}" alt="{{ player.name }}" class="player-img">
 				{% else %}
 				<div class="no-image"></div>
 				{% endif %}
 			</div>
 
 			<div class="profile-info">
-				<h1>{{ player.strPlayer }}</h1>
+				<h1>{{ player.name }}</h1>
 				<div class="player-meta">
-					<span class="position">{{ player.strPosition }}</span>
-					<span class="team">{{ player.strTeam or 'Free Agent' }}</span>
-					<span class="nationality">{{ player.strNationality }}</span>
+					<span class="position">{{ player.position }}</span>
+					<span class="team">{{ player.team or 'Free Agent' }}</span>
+					<span class="jersey">#{{ player.jersey }}</span>
 				</div>
 
 				<div class="player-stats">
 					<div class="stat">
+						<strong>Age:</strong>
+						{{ player.age or 'N/A' }}
+					</div>
+					<div class="stat">
 						<strong>Height:</strong>
-						{{ player.strHeight or 'N/A' }}
+						{{ player.height or 'N/A' }}
 					</div>
 					<div class="stat">
 						<strong>Weight:</strong>
-						{{ player.strWeight or 'N/A' }}
+						{{ player.weight or 'N/A' }}
 					</div>
 					<div class="stat">
-						<strong>Born:</strong>
-						{{ player.dateBorn or 'N/A' }}
+						<strong>College:</strong>
+						{{ player.college }}
+					</div>
+					<div class="stat">
+						<strong>Experience:</strong>
+						{{ player.experience }} years
 					</div>
 					<div class="stat">
 						<strong>Birth Place:</strong>
-						{{ player.strBirthLocation or 'N/A' }}
+						{{ player.birth_place }}
 					</div>
 				</div>
 			</div>
 		</div>
 
-		{% if player.strDescriptionEN %}
-		<div class="player-info">
-			<h3>Biography</h3>
-			<p>{{ player.strDescriptionEN }}</p>
+		{% if player.description %}
+		<div class="player-bio">
+			<h3>About</h3>
+			<p>{{ player.description }}</p>
 		</div>
 		{% endif %}
 
-		<div class="career-info">
-			<h3>Career Information</h3>
-			<div class="career-stats">
-				<div class="stats-card">
-					<strong>Current Team</strong>
-					<span>{{ player.strTeam or 'Free Agent' }}</span>
-				</div>
-				<div class="stats-card">
-					<strong>Position</strong>
-					<span>{{ player.strPosition }}</span>
-				</div>
-				<div class="stats-card">
-					<strong>Number</strong>
-					<span>{{ player.strNumber or 'N/A' }}</span>
-				</div>
-				<div class="stats-card">
-					<strong>Status</strong>
-					<span>{{ player.strStatus or 'Active' }}</span>
-				</div>
-			</div>
-		</div>
+		{% if player.stats %}
+		<div class="player-statistics">
+			<h3>Season Statistics</h3>
+			{% for category in player.stats %}
+			<div class="stat-category">
+				<h4>{{ category.displayName }}</h4>
+				<div class="stats-grid">
+					{% for stat in category.stats %}
+					<div class="stat-item">
+						<strong>{{ stat.displayName }}:</strong>
+						<span>{{ stat.displayValue }}</span>
+					</div>
+					{% endfor %}
 
-		{% if player.strFacebook or player.strTwitter or player.strInstagram %}
-		<div class="social-links">
-			<h3>Social Media</h3>
-			<div class="social-icons">
-				{% if player.strFacebook %}
-				<a href="{{ player.strFacebook }}" target="_blank">Facebook</a>
-				{% endif %}
-				{% if player.strTwitter %}
-				<a href="{{ player.strTwitter }}" target="_blank">Twitter</a>
-				{% endif %}
-				{% if player.strInstagram %}
-				<a href="{{ player.strInstagram }}" target="_blank">Instagram</a>
-				{% endif %}
+				</div>
 			</div>
+			{% endfor %}
 		</div>
 		{% endif %}
-
-	</div>
+		
+	</div>	
 	{% else %}
 	<div class="error-message">
-		<p>Player not found or details unvailable.</p>
+		<p>Player not found or details unavailable.</p>
 	</div>
 	{% endif %}
 </div>

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="scores">
+	<h2>Live NFL Scores</h2>
+
+	<div class="navigation">
+		<a href="{{ url_for('index') }}" class="btn-small">Back to Home</a>
+	</div>
+
+	{% if games %}
+	<div class="games-list">
+		{% for game in games %}
+		<div class="game-card {% if game.status == 'in' %}live{% endif %}">
+			<div class="game-header">
+				<span class="status">{{ game.status|upper }}</span>
+				<span class="date">{{ game.date }} {{ game.time }}</span>
+			</div>
+			<div class="teams">
+				<div class="team">
+					<span class="team-name">{{ game.away_team }}</span>
+					<span class="score">{{ game.away_score }}</span>
+				</div>
+			</div>
+			<div class="team">
+				<span class="team-name">{{ game.home_team }}</span>
+				<span class="score">{{ game.home_score }}</span>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	{% else %}
+	<div class="no-games">
+		<p>No games currently available</p>
+	</div>
+	{% endif %}
+	
+</div>
+{% endblock %}
