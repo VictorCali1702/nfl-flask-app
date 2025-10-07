@@ -89,3 +89,58 @@ POPULAR_PLAYERS = {
 	"tyreek hill": "3052976",
 	"myles garrett": "3915519"
 }
+
+@app.route("/")
+def index():
+	return render_template("index.html", teams=TEAM_DISPLAY_NAMES, popular_players=POPULAR_PLAYERS)
+
+# Team schedule - ALL GAMES
+@app.route("/team/<team_key>")
+def team_schedule(team_key):
+	if team_key in ESPN_TEAMS:
+		team_id = ESPN_TEAMS[team_key]
+		display_name = TEAM_DISPLAY_NAMES[team_key]
+
+		#get full team schedule from ESPN
+		url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{team_id}/schedule"
+		response = requests.get(url)
+		data = response.json()
+		
+		events = data.get("events", [])
+
+		games = []
+		for event in events:
+			competitions = event.get("competitions", [{}])[0]
+			competitors = competitions.get("competitors", [])
+			if len(competitors) >= 2:
+				home_team = competitors[0].get("team", {}).get("displayName", "")
+				away_team = competitors[1].get("team", {}).get("displayName", "")
+				home_score = competitors[0].get("score", {}).get("displayValue", "")
+				away_score = competitors[1].get("score", {}).get("displayValue", "")
+
+				game = {
+					"date": event.get("date", "")[:10],
+					"home_teaam": home_team,
+					"away_team": away_team,
+					"home_score": home_score,
+					"away_score": away_score,
+					"status": event.get("status", {}).get("type", {}).get("state", "Scheduled"),
+					"venue": competitions.get("venue", {}).get("fullName", ""),
+					"time": event.get("date", "")[11:16] if event.get("date") else "TBD"
+				}
+				games.append(game)
+
+# Split into completed and upcoming games
+		completed_games = [g for g in games if g["status"] == "post"]
+		upcoming_games = [g for g in games if g["status"] != "post"]
+
+		return render_template("team_schedule.html", completed_games=completed_games[-10:],
+						 upcoming_games=upcoming_games, team_name=display_name, 
+						 team_key=team_key, total_games=len(games))
+	
+	return render_template("search.html", error="Team not found")
+
+# TEAM SEARCH
+@app.route("/search", methods=["GET", "POST"])
+def search_team():
+	...				
