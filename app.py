@@ -1,46 +1,45 @@
-# NFL APP in FLASK
+# Nfl App with ESPN API - complete rewrite
 from flask import Flask, render_template, request
 import requests
-import matplotlib.pyplot as plt
-import io
-import base64
+import json
+from datetime import datetime
 
 app = Flask(__name__)
 
-# A dictionary of all 32 NFL teams with their IDs
-NFL_TEAMS = {
-	"arizona cardinals": "134960",
-	"atlanta falcons": "134944",
-	"baltimore ravens": "134922",
-	"buffalo bills": "134921",
-	"carolina panthers": "134952",
-	"chicago bears": "134918",
-	"cincinnati bengals": "134923",
-	"cleveland browns": "134924",
-	"dallas cowboys": "134925",
-	"denver broncos": "134926",
-	"detroit lions": "134927",
-	"green bay packers": "134928",
-	"houston texans": "134929",
-	"indianapolis colts": "134930",
-	"jacksonville jaguars": "134931",
-	"kansas city chiefs": "134920",
-	"las vegas raiders": "134933",
-	"los angeles chargers": "134934",
-	"los angeles rams": "134935",
-	"miami dolphins": "134936",
-	"minnesota vikings": "134937",
-	"new england patriots": "134917",
-	"new orleans saints": "134938",
-	"new york giants": "134939",
-	"new york jets": "134940",
-	"philadelphia eagles": "134919",
-	"pittsburgh steelers": "134941",
-	"san francisco 49ers": "134942",
-	"seattle seahawks": "134943",
-	"tampa bay buccaneers": "134945",
-	"tennessee titans": "134946",
-	"washington commanders": "134947"
+#ESPN Team IDs - COMPLETE LIST
+ESPN_TEAMS = {
+	"arizona cardinals": "22",
+	"atlanta falcons": "1",
+	"baltimore ravens": "33",
+	"buffalo bills": "2",
+	"carolina panthers": "29",
+	"chicago bears": "3",
+	"cincinatti bengals": "4",
+	"cleveland browns": "5",
+	"dallas cowboys": "6",
+	"denver broncos": "7",
+	"detroit lions": "8",
+	"green bay packers": "9",
+	"houston texans": "34",
+	"indianapolis colts": "11",
+	"jacksonville jaguars": "30",
+	"kansas city chiefs": "16",
+	"las vegas raiders": "13",
+	"los angeles chargers": "24",
+	"los angeles rams": "14",
+	"miami dolphins": "15",
+	"minnesota vikings": "16",
+	"new england patriots": "17",
+	"new orleans saints": "18",
+	"new york giants": "19",
+	"new york jets": "20",
+	"philadelphia eagles": "21",
+	"pittsburgh steelers": "23",
+	"san francisco 49ers": "25",
+	"seattle seahawks": "26",
+	"tampa bay buccaneers": "27",
+	"tennessee titans": "10",
+	"washington commanders": "28"
 }
 
 TEAM_DISPLAY_NAMES = {
@@ -50,7 +49,7 @@ TEAM_DISPLAY_NAMES = {
 	"buffalo bills": "Buffalo Bills",
 	"carolina panthers": "Carolina Panthers",
 	"chicago bears": "Chicago Bears",
-	"cincinnati bengals": "Cincinnati Bengals",
+	"cincinatti bengals": "Cincinatti Bengals",
 	"cleveland browns": "Cleveland Browns",
 	"dallas cowboys": "Dallas Cowboys",
 	"denver broncos": "Denver Broncos",
@@ -79,147 +78,14 @@ TEAM_DISPLAY_NAMES = {
 }
 
 POPULAR_PLAYERS = {
-	"patrick mahomes": "Patrick Mahomes",
-	"tom brady": "Tom Brady",
-	"aaron rodgers": "Aaron Rodgers",
-	"josh allen": "Josh Allen",
-	"joe burrow": "Joe Burrow",
-	"justin jefferson": "Justin Jefferson",
-	"travis kelce": "Travis Kelce",
-	"christian mccaffrey": "Christian McCaffrey",
-	"tyreek hill": "Tyreek Hill",
-	"myles garrett": "Myles Garrett"
+	"patrick mahomes": "3139477",
+	"tom brady": "1120",
+	"aaron rodgers": "8439",
+	"josh allen": "3915511",
+	"joe burrow": "4241385",
+	"justin jefferson": "4360316",
+	"travis kelce": "2577411",
+	"christian mccaffrey": "3916388",
+	"tyreek hill": "3052976",
+	"myles garrett": "3915519"
 }
-
-@app.route("/")
-def index():
-	return render_template("index.html", teams=TEAM_DISPLAY_NAMES, popular_players=POPULAR_PLAYERS)
-
-@app.route("/games")
-def games():
-	url = "https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=134922"
-	response = requests.get(url)
-	data = response.json()
-	games = data.get("results", []) # list of matches
-	return render_template("games.html", games=games, team_name="Baltimore Ravens")
-
-@app.route("/search", methods=["GET", "POST"])
-def search_team():
-	if request.method == "POST":
-		team_name = request.form.get("team_name", "").lower().strip()
-		
-		if team_name in NFL_TEAMS:
-			team_id = NFL_TEAMS[team_name]
-			display_name = TEAM_DISPLAY_NAMES[team_name]
-
-			url = f"https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id={team_id}"
-			response = requests.get(url)
-			data = response.json()
-
-			games = data.get("results", [])
-			return render_template("team_results.html", games=games, team_name=display_name, search_query=team_name)
-		else:
-			return render_template("search.html", error="Team not found. Try full team name (e.g., 'dallas cowboys')", 
-						  teams=TEAM_DISPLAY_NAMES)
-	return render_template("search.html", teams=TEAM_DISPLAY_NAMES)
-
-@app.route("/team/<team_key>")
-def team_games(team_key):
-	if team_key in NFL_TEAMS:
-		team_id = NFL_TEAMS[team_key]
-		display_name = TEAM_DISPLAY_NAMES[team_key]
-
-		url = f"https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id={team_id}"
-		response = requests.get(url)
-		data = response.json()
-
-		games = data.get("results", [])
-		return render_template("team_results.html", games=games, team_name=display_name, search_query=team_key)
-	
-	return render_template("search.html", error="Team not found", teams=TEAM_DISPLAY_NAMES)
-
-
-@app.route("/players", methods=["GET", "POST"])
-def search_players():
-	if request.method == "POST":
-		player_name = request.form.get("player_name", "").strip()
-		
-		if player_name:
-			# seek the player in API
-			url = f"https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p={player_name}"
-			response = requests.get(url)
-			data = response.json()
-
-			players = data.get("player", [])
-
-			# filter only NFL players
-			nfl_players = [p for p in players if p.get("strSport") == "American Football"]
-			return render_template("player_results.html", players=nfl_players, search_query=player_name, results_count=len(nfl_players))
-		else:
-			return render_template("player_search.html", error="Please enter a player name", popular_players=POPULAR_PLAYERS)
-	
-	return render_template("player_search.html", popular_players=POPULAR_PLAYERS)
-
-# player details page
-@app.route("/player/<player_id>")
-def player_detail(player_id):
-	# download player details
-	url = f"https://www.thesportsdb.com/api/v1/json/3/lookupplayer.php?id={player_id}"
-	response = requests.get(url)
-	data = response.json()
-
-	player = data.get("players", [{}])[0] if data.get("players") else {}
-
-	# Download career stats (if available)
-	stats_url = f"https://www.thesportsdb.com/api/v1/json/3/lookupplayer.php?id={player_id}"
-
-	return render_template("player_detail.html", player=player)
-
-# NEw FUNCTIONS:
-
-@app.route("/team/<team_key>/all_matches")
-def team_all_matches(team_key):
-	if team_key in NFL_TEAMS:
-		team_id = NFL_TEAMS[team_key]
-		display_name = TEAM_DISPLAY_NAMES[team_key]
-
-		# download all matches from season 2024
-		# current_year = 2024 #later we can that change
-
-		url = f"https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id={team_id}"
-		response = requests.get(url)
-		data = response.json()
-		games = data.get("events", [])
-
-		print(f"DEBUG: Found {len(games)} games for {display_name}")
-		for game in games:
-			print(f"DEBUG: {game.get('strEvent')} - {game.get('strHomeTeam')} vs {game.get('strAwayTeam')}")
-
-
-		# Divide the games for home and away games:
-		home_games = [game for game in games if game.get("strHomeTeam", "").lower() == team_key]
-		away_games = [game for game in games if game.get("strAwayTeam", "").lower() == team_key]
-
-		return render_template("team_all_matches.html", games=games, home_games=home_games, away_games=away_games, 
-						 team_name=display_name, team_key=team_key, total_games=len(games))
-	
-	return render_template("search.html", error="Team not found", teams=TEAM_DISPLAY_NAMES)
-
-@app.route("/team/<team_key>/schedule")
-def team_schedule(team_key):
-	if team_key in NFL_TEAMS:
-		team_id = NFL_TEAMS[team_key]
-		display_name = TEAM_DISPLAY_NAMES[team_key]
-
-		url = f"https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id={team_id}"
-		response = requests.get(url)
-		data = response.json()
-
-		upcoming_games = data.get("events", [])
-
-		return render_template("team_schedule.html", upcoming_games=upcoming_games, team_name=display_name, team_key=team_key)
-	
-	return render_template("search.html", error="Team not found", teams=TEAM_DISPLAY_NAMES)
-
-if __name__ == "__main__":
-	app.run(debug=True)
